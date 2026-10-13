@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, cwp156-site-teste]
+    runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 10
 
     steps:
