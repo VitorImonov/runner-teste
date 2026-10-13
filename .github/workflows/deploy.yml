@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - master
-
   workflow_dispatch:
 
 permissions:
@@ -26,14 +25,17 @@ jobs:
 
       - name: Preparar arquivos para deploy
         run: |
-          rsync -rtv \
+          rsync -rtv --delete \
             --exclude='.git/' \
             --exclude='.github/' \
+            --exclude='.deploy-trigger' \
             "$GITHUB_WORKSPACE/" \
             /home/github-runner/deploy-staging/testeru/
 
-      - name: Confirmar arquivos recebidos
+      - name: Solicitar publicacao
         run: |
-          echo "Arquivos preparados:"
-          find /home/github-runner/deploy-staging/testeru \
-            -maxdepth 2 -type f
+          touch /home/github-runner/deploy-staging/testeru/.deploy-trigger
+
+      - name: Confirmar preparacao
+        run: |
+          echo "Arquivos preparados e publicacao solicitada."
