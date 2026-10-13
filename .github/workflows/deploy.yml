@@ -1,0 +1,39 @@
+
+name: Deploy CWP - Testeru
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-testeru
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, cwp156-site-teste]
+    timeout-minutes: 10
+
+    steps:
+      - name: Baixar arquivos do GitHub
+        uses: actions/checkout@v4
+
+      - name: Preparar arquivos para deploy
+        run: |
+          rsync -rtv \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            "$GITHUB_WORKSPACE/" \
+            /home/github-runner/deploy-staging/testeru/
+
+      - name: Confirmar arquivos recebidos
+        run: |
+          echo "Arquivos preparados:"
+          find /home/github-runner/deploy-staging/testeru \
+            -maxdepth 2 -type f
