@@ -24,18 +24,29 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Preparar arquivos para deploy
+        shell: bash
         run: |
+          set -euo pipefail
+
+          DESTINO="/home/github-runner/deploy-staging/testeru"
+
           rsync -rtv --delete \
             --exclude='.git/' \
             --exclude='.github/' \
             --exclude='.deploy-trigger' \
             "$GITHUB_WORKSPACE/" \
-            /home/github-runner/deploy-staging/testeru/
+            "$DESTINO/"
 
-      - name: Solicitar publicacao
+      - name: Publicar arquivos no CWP
+        shell: bash
         run: |
-          touch /home/github-runner/deploy-staging/testeru/.deploy-trigger
+          set -euo pipefail
 
-      - name: Confirmar preparacao
+          sudo -n /usr/bin/systemctl start deploy-testeru.service
+
+          echo "Publicacao concluida com sucesso."
+
+      - name: Confirmar deploy
         run: |
-          echo "Arquivos preparados e publicacao solicitada."
+          echo "Deploy finalizado."
+          echo "Commit publicado: $GITHUB_SHA"
